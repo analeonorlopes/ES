@@ -9,6 +9,7 @@ import org.junit.Test;
 import pt.ulisboa.tecnico.learnjava.bank.services.Services;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.Operation;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.Sibs;
+import pt.ulisboa.tecnico.learnjava.sibs.domain.transferOperationData;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.OperationException;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.SibsException;
 
@@ -17,11 +18,13 @@ public class GetOperationMethodTest {
 	private static final int VALUE = 100;
 
 	private Sibs sibs;
+	private transferOperationData data;
 
 	@Before
 	public void setUp() throws OperationException, SibsException {
+		data = new transferOperationData(new Services(), null, TARGET_IBAN, VALUE);
 		this.sibs = new Sibs(3, new Services());
-		this.sibs.addOperation(Operation.OPERATION_PAYMENT, null, TARGET_IBAN, VALUE);
+		this.sibs.addOperation(Operation.OPERATION_PAYMENT, data);
 	}
 
 	@Test

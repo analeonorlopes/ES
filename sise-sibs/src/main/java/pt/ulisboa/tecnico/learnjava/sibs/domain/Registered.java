@@ -1,7 +1,6 @@
 package pt.ulisboa.tecnico.learnjava.sibs.domain;
 
 import pt.ulisboa.tecnico.learnjava.bank.exceptions.AccountException;
-import pt.ulisboa.tecnico.learnjava.bank.services.Services;
 
 public class Registered extends State {
 
@@ -10,10 +9,10 @@ public class Registered extends State {
 	}
 
 	@Override
-	public void process(Services services, String sourceIban, String targetIban, int amount) {
+	public void process(transferOperationData data) {
 		TransferOperation op = getOperation();
 		try {
-			services.withdraw(sourceIban, amount);
+			data.getServices().withdraw(data.getSourceIban(), data.getAmount());
 			op.setState(new Withdrawn(op));
 		} catch (AccountException e) {
 			op.setState(new Retry(op, "REGISTERED"));
@@ -22,12 +21,12 @@ public class Registered extends State {
 	}
 
 	@Override
-	public void undo(Services services, String sourceIban, String targetIban, int amount) {
+	public void undo(transferOperationData data) {
 
 	}
 
 	@Override
-	public void cancel(Services services, String sourceIban, String targetIban, int amount) {
+	public void cancel(transferOperationData data) {
 		TransferOperation op = getOperation();
 		op.setState(new Cancelled(op));
 

@@ -9,6 +9,7 @@ import org.junit.Test;
 import pt.ulisboa.tecnico.learnjava.bank.services.Services;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.Operation;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.Sibs;
+import pt.ulisboa.tecnico.learnjava.sibs.domain.transferOperationData;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.OperationException;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.SibsException;
 
@@ -21,8 +22,10 @@ public class GetTotalValueOfOperationsMethodTest {
 	@Before
 	public void setUp() throws OperationException, SibsException {
 		this.sibs = new Sibs(3, new Services());
-		this.sibs.addOperation(Operation.OPERATION_PAYMENT, null, TARGET_IBAN, 100);
-		this.sibs.addOperation(Operation.OPERATION_TRANSFER, SOURCE_IBAN, TARGET_IBAN, 100);
+		transferOperationData data1 = new transferOperationData(new Services(), null, TARGET_IBAN, 100);
+		transferOperationData data2 = new transferOperationData(new Services(), SOURCE_IBAN, TARGET_IBAN, 100);
+		this.sibs.addOperation(Operation.OPERATION_PAYMENT, data1);
+		this.sibs.addOperation(Operation.OPERATION_TRANSFER, data2);
 	}
 
 	@Test

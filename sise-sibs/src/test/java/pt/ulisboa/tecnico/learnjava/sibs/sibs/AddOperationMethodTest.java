@@ -9,6 +9,7 @@ import org.junit.Test;
 import pt.ulisboa.tecnico.learnjava.bank.services.Services;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.Operation;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.Sibs;
+import pt.ulisboa.tecnico.learnjava.sibs.domain.transferOperationData;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.OperationException;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.SibsException;
 
@@ -26,7 +27,8 @@ public class AddOperationMethodTest {
 
 	@Test
 	public void success() throws OperationException, SibsException {
-		int position = this.sibs.addOperation(Operation.OPERATION_TRANSFER, SOURCE_IBAN, TARGET_IBAN, VALUE);
+		transferOperationData data = new transferOperationData(new Services(), SOURCE_IBAN, TARGET_IBAN, VALUE);
+		int position = this.sibs.addOperation(Operation.OPERATION_TRANSFER, data);
 
 		Operation operation = this.sibs.getOperation(position);
 
@@ -37,11 +39,13 @@ public class AddOperationMethodTest {
 
 	@Test
 	public void successWithDelete() throws OperationException, SibsException {
-		int position = this.sibs.addOperation(Operation.OPERATION_TRANSFER, SOURCE_IBAN, TARGET_IBAN, VALUE);
-		this.sibs.addOperation(Operation.OPERATION_TRANSFER, SOURCE_IBAN, TARGET_IBAN, VALUE);
-		this.sibs.addOperation(Operation.OPERATION_TRANSFER, SOURCE_IBAN, TARGET_IBAN, VALUE);
+		transferOperationData data = new transferOperationData(new Services(), SOURCE_IBAN, TARGET_IBAN, VALUE);
+		int position = this.sibs.addOperation(Operation.OPERATION_TRANSFER, data);
+		this.sibs.addOperation(Operation.OPERATION_TRANSFER, data);
+		this.sibs.addOperation(Operation.OPERATION_TRANSFER, data);
 		this.sibs.removeOperation(position);
-		position = this.sibs.addOperation(Operation.OPERATION_PAYMENT, null, TARGET_IBAN, 200);
+		transferOperationData data2 = new transferOperationData(new Services(), null, TARGET_IBAN, 200);
+		position = this.sibs.addOperation(Operation.OPERATION_PAYMENT, data2);
 
 		Operation operation = this.sibs.getOperation(position);
 
@@ -52,10 +56,11 @@ public class AddOperationMethodTest {
 
 	@Test(expected = SibsException.class)
 	public void failIsFull() throws OperationException, SibsException {
-		this.sibs.addOperation(Operation.OPERATION_TRANSFER, SOURCE_IBAN, TARGET_IBAN, VALUE);
-		this.sibs.addOperation(Operation.OPERATION_TRANSFER, SOURCE_IBAN, TARGET_IBAN, VALUE);
-		this.sibs.addOperation(Operation.OPERATION_TRANSFER, SOURCE_IBAN, TARGET_IBAN, VALUE);
-		this.sibs.addOperation(Operation.OPERATION_TRANSFER, SOURCE_IBAN, TARGET_IBAN, VALUE);
+		transferOperationData data = new transferOperationData(new Services(), SOURCE_IBAN, TARGET_IBAN, VALUE);
+		this.sibs.addOperation(Operation.OPERATION_TRANSFER, data);
+		this.sibs.addOperation(Operation.OPERATION_TRANSFER, data);
+		this.sibs.addOperation(Operation.OPERATION_TRANSFER, data);
+		this.sibs.addOperation(Operation.OPERATION_TRANSFER, data);
 	}
 
 	@After

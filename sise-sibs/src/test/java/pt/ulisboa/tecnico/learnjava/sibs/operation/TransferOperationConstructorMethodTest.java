@@ -10,6 +10,7 @@ import pt.ulisboa.tecnico.learnjava.bank.services.Services;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.Operation;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.Sibs;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.TransferOperation;
+import pt.ulisboa.tecnico.learnjava.sibs.domain.transferOperationData;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.OperationException;
 
 public class TransferOperationConstructorMethodTest {
@@ -28,7 +29,8 @@ public class TransferOperationConstructorMethodTest {
 	public void success() throws OperationException {
 		Services services = new Services();
 		Sibs sibs = new Sibs(100, services);
-		TransferOperation operation = new TransferOperation(sibs, SOURCE_IBAN, TARGET_IBAN, VALUE);
+		transferOperationData data = new transferOperationData(new Services(), SOURCE_IBAN, TARGET_IBAN, VALUE);
+		TransferOperation operation = new TransferOperation(sibs, data);
 
 		assertEquals(Operation.OPERATION_TRANSFER, operation.getType());
 		assertEquals(100, operation.getValue());
@@ -38,27 +40,32 @@ public class TransferOperationConstructorMethodTest {
 
 	@Test(expected = OperationException.class)
 	public void nonPositiveValue() throws OperationException {
-		new TransferOperation(sibs, SOURCE_IBAN, TARGET_IBAN, 0);
+		transferOperationData data = new transferOperationData(new Services(), SOURCE_IBAN, TARGET_IBAN, 0);
+		new TransferOperation(sibs, data);
 	}
 
 	@Test(expected = OperationException.class)
 	public void nullSourceIban() throws OperationException {
-		new TransferOperation(sibs, null, TARGET_IBAN, 100);
+		transferOperationData data = new transferOperationData(new Services(), null, TARGET_IBAN, 100);
+		new TransferOperation(sibs, data);
 	}
 
 	@Test(expected = OperationException.class)
 	public void emptySourceIban() throws OperationException {
-		new TransferOperation(sibs, "", TARGET_IBAN, 100);
+		transferOperationData data = new transferOperationData(new Services(), "", TARGET_IBAN, 100);
+		new TransferOperation(sibs, data);
 	}
 
 	@Test(expected = OperationException.class)
 	public void nullTargetIban() throws OperationException {
-		new TransferOperation(sibs, SOURCE_IBAN, null, 100);
+		transferOperationData data = new transferOperationData(new Services(), SOURCE_IBAN, null, 100);
+		new TransferOperation(sibs, data);
 	}
 
 	@Test(expected = OperationException.class)
 	public void emptyTargetIban() throws OperationException {
-		new TransferOperation(sibs, SOURCE_IBAN, "", 100);
+		transferOperationData data = new transferOperationData(new Services(), SOURCE_IBAN, "", 100);
+		new TransferOperation(sibs, data);
 	}
 
 	@After

@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 import pt.ulisboa.tecnico.learnjava.bank.exceptions.AccountException;
 import pt.ulisboa.tecnico.learnjava.bank.exceptions.BankException;
 import pt.ulisboa.tecnico.learnjava.bank.exceptions.ClientException;
-import pt.ulisboa.tecnico.learnjava.bank.services.Services;
 
 public class Bank {
 	public enum AccountType {
@@ -72,6 +71,19 @@ public class Bank {
 			throw new BankException();
 		}
 
+		/*
+		 * metodo chooseAccountType crida para respeitar guideline 1 ->
+		 * "Write Short Units of Code"
+		 */
+		Account account = chooseAccountType(type, client, amount, value);
+
+		this.accounts.add(account);
+
+		return getCode() + account.getAccountId();
+	}
+
+	private Account chooseAccountType(AccountType type, Client client, int amount, int value)
+			throws AccountException, ClientException, BankException {
 		Account account;
 		switch (type) {
 		case CHECKING:
@@ -89,10 +101,7 @@ public class Bank {
 		default:
 			throw new BankException();
 		}
-
-		this.accounts.add(account);
-
-		return getCode() + account.getAccountId();
+		return account;
 	}
 
 	public void deleteAccount(Account account) throws BankException {
@@ -149,33 +158,6 @@ public class Bank {
 		Set<Account> accountsToRemove = this.accounts.stream().filter(a -> a.getClient() == client)
 				.collect(Collectors.toSet());
 		this.accounts.removeAll(accountsToRemove);
-	}
-
-	public static void main(String[] args) throws BankException, AccountException, ClientException {
-		Services services = new Services();
-		Bank cgd = new Bank("CGD");
-
-		Client clientOne = new Client(cgd, "José", "Manuel", "123456789", "987654321", "Street", 34);
-		Client clientTwo = new Client(cgd, "José", "Manuel", "123456789", "987654321", "Street", 34);
-
-		cgd.createAccount(AccountType.CHECKING, clientOne, 100, 0);
-		String iban = cgd.createAccount(AccountType.CHECKING, clientTwo, 1000, 0);
-
-		System.out.println(cgd.getTotalNumberOfAccounts());
-		
-		Account account = services.getAccountByIban(iban);
-
-		try {
-			account.deposit(100);
-		} catch (AccountException e) {
-			System.out.println("You tried to deposit a negative amount of " + e.getValue());
-		}
-
-		System.out.println(account.getBalance());
-
-		cgd.deleteAccount(account);
-
-		System.out.println(cgd.getTotalNumberOfAccounts());
 	}
 
 }

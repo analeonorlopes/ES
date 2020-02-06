@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.learnjava.sibs.domain;
 
-import pt.ulisboa.tecnico.learnjava.bank.services.Services;
-
 public class Retry extends State {
 
 	private static int count;
@@ -13,17 +11,17 @@ public class Retry extends State {
 	}
 
 	@Override
-	public void process(Services services, String sourceIban, String targetIban, int amount) {
+	public void process(transferOperationData data) {
 		++count;
 		TransferOperation op = getOperation();
 		SetState(op);
-		op.getState().process(services, sourceIban, targetIban, amount);
+		op.getState().process(data);
 		if (!(op.getState() instanceof Retry)) {
 			count = 0;
 		} else if (count == 3) {
 			count = 0;
 			SetState(op);
-			op.getState().undo(services, sourceIban, targetIban, amount);
+			op.getState().undo(data);
 
 			op.setState(new Error(op));
 		}
@@ -45,11 +43,11 @@ public class Retry extends State {
 	}
 
 	@Override
-	public void undo(Services services, String sourceIban, String targetIban, int amount) {
+	public void undo(transferOperationData data) {
 	}
 
 	@Override
-	public void cancel(Services services, String sourceIban, String targetIban, int amount) {
+	public void cancel(transferOperationData data) {
 	}
 
 }

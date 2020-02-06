@@ -5,22 +5,18 @@ import pt.ulisboa.tecnico.learnjava.bank.services.Services;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.OperationException;
 
 public class TransferOperation extends Operation {
-	private final String sourceIban;
-	private final String targetIban;
+	private transferOperationData data;
 	private Sibs sibs;
 	private State state;
-	private int amount;
 
-	public TransferOperation(Sibs sibs, String sourceIban, String targetIban, int value) throws OperationException {
-		super(Operation.OPERATION_TRANSFER, value);
+	public TransferOperation(Sibs sibs, transferOperationData data) throws OperationException {
+		super(Operation.OPERATION_TRANSFER, data.getAmount());
 
-		if (invalidString(sourceIban) || invalidString(targetIban)) {
+		if (invalidString(data.getSourceIban()) || invalidString(data.getTargetIban())) {
 			throw new OperationException();
 		}
 
-		this.sourceIban = sourceIban;
-		this.targetIban = targetIban;
-		this.amount = value;
+		this.data = data;
 		this.sibs = sibs;
 		this.state = new Registered(this);
 	}
@@ -35,11 +31,11 @@ public class TransferOperation extends Operation {
 	}
 
 	public String getSourceIban() {
-		return this.sourceIban;
+		return this.data.getSourceIban();
 	}
 
 	public String getTargetIban() {
-		return this.targetIban;
+		return this.data.getTargetIban();
 	}
 
 	public State getState() {
@@ -51,11 +47,11 @@ public class TransferOperation extends Operation {
 	}
 
 	public void process(Services services) throws AccountException {
-		state.process(services, sourceIban, targetIban, amount);
+		state.process(data);
 	}
 
 	public void cancel(Services services) throws AccountException {
-		state.cancel(services, sourceIban, targetIban, amount);
+		state.cancel(data);
 
 	}
 

@@ -10,10 +10,10 @@ public class Deposited extends State {
 	}
 
 	@Override
-	public void process(Services services, String sourceIban, String targetIban, int amount) {
+	public void process(transferOperationData data) {
 		TransferOperation op = getOperation();
 		try {
-			services.withdraw(sourceIban, op.commission());
+			data.getServices().withdraw(data.getSourceIban(), op.commission());
 			op.setState(new Completed(op));
 		} catch (AccountException e) {
 			op.setState(new Retry(op, "DEPOSITED"));
@@ -22,10 +22,13 @@ public class Deposited extends State {
 	}
 
 	@Override
-	public void undo(Services services, String sourceIban, String targetIban, int amount) {
+	public void undo(transferOperationData data) {
+		Services services = data.getServices();
+		int amount = data.getAmount();
+
 		try {
-			services.deposit(sourceIban, amount);
-			services.withdraw(targetIban, amount);
+			services.deposit(data.getSourceIban(), amount);
+			services.withdraw(data.getTargetIban(), amount);
 			TransferOperation op = getOperation();
 			op.setState(new Registered(op));
 		} catch (AccountException e) {
@@ -34,9 +37,9 @@ public class Deposited extends State {
 	}
 
 	@Override
-	public void cancel(Services services, String sourceIban, String targetIban, int amount) {
+	public void cancel(transferOperationData data) {
 		TransferOperation op = getOperation();
-		undo(services, sourceIban, targetIban, amount);
+		undo(data);
 		op.setState(new Cancelled(op));
 
 	}

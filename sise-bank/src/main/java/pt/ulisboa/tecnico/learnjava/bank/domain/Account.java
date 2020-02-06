@@ -66,11 +66,7 @@ public abstract class Account {
 	}
 
 	public void inactive(CheckingAccount checking) throws AccountException {
-		if (this.isInactive()) {
-			throw new AccountException();
-		}
-
-		if (checking != null && this.client != checking.getClient()) {
+		if (this.isInactive() || (checking != null && this.client != checking.getClient())) {
 			throw new AccountException();
 		}
 

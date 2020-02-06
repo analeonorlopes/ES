@@ -19,8 +19,7 @@ public class Sibs {
 		this.services = services;
 	}
 
-	public int addOperation(String type, String sourceIban, String targetIban, int value)
-			throws OperationException, SibsException {
+	public int addOperation(String type, transferOperationData data) throws OperationException, SibsException {
 		int position = -1;
 		for (int i = 0; i < this.operations.length; i++) {
 			if (this.operations[i] == null) {
@@ -35,9 +34,9 @@ public class Sibs {
 
 		Operation operation;
 		if (type.equals(Operation.OPERATION_TRANSFER)) {
-			operation = new TransferOperation(this, sourceIban, targetIban, value);
+			operation = new TransferOperation(this, data);
 		} else {
-			operation = new PaymentOperation(targetIban, value);
+			operation = new PaymentOperation(data.getTargetIban(), data.getAmount());
 		}
 
 		this.operations[position] = operation;
@@ -95,7 +94,14 @@ public class Sibs {
 			throw new SibsException();
 		}
 
-		int position = addOperation(Operation.OPERATION_TRANSFER, sourceIban, targetIban, amount);
+		/*
+		 * Classe transferOperationData foi criada para respeitar guideline 4 "Keep Unit
+		 * Interfaces Small" -> todos os metodos relacionados com o processo de
+		 * transferencia usam estes 4 atributos.
+		 */
+		transferOperationData TOpData = new transferOperationData(this.services, sourceIban, targetIban, amount);
+
+		int position = addOperation(Operation.OPERATION_TRANSFER, TOpData);
 		unprocessedTransactions.add((TransferOperation) operations[position]);
 
 		return position;

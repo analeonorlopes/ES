@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.learnjava.sibs.domain;
 
-import pt.ulisboa.tecnico.learnjava.bank.services.Services;
-
 public abstract class State {
 
 	private TransferOperation operation;
@@ -14,10 +12,10 @@ public abstract class State {
 		return operation;
 	}
 
-	public abstract void process(Services services, String sourceIban, String targetIban, int amount);
+	public abstract void process(transferOperationData data);
 
-	public abstract void undo(Services services, String sourceIban, String targetIban, int amount);
+	public abstract void undo(transferOperationData data);
 
-	public abstract void cancel(Services services, String sourceIban, String targetIban, int amount);
+	public abstract void cancel(transferOperationData data);
 
 }

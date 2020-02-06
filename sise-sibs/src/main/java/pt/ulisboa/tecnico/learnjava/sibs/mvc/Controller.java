@@ -11,6 +11,7 @@ import pt.ulisboa.tecnico.learnjava.sibs.domain.Completed;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.Error;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.Sibs;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.TransferOperation;
+import pt.ulisboa.tecnico.learnjava.sibs.domain.transferOperationData;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.OperationException;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.SibsException;
 
@@ -54,20 +55,29 @@ public class Controller {
 
 		Services services = new Services();
 		Sibs sibs = new Sibs(10, services);
-		int position;
+		transferOperationData data = new transferOperationData(services, sourceIban, targetIban, amount);
 		try {
-			position = sibs.transfer(sourceIban, targetIban, amount);
-			TransferOperation op = (TransferOperation) sibs.getOperation(position);
-			while (!(op.getState() instanceof Completed || op.getState() instanceof Error
-					|| op.getState() instanceof Cancelled)) {
-				sibs.process();
-			}
-			if (op.getState() instanceof Completed) {
-				return "Transfer successful!";
-			} else {
-				return "Could not complete transfer!";
-			}
+			/*
+			 * metodo processTransfer criado para respeitar as guidelines 1:
+			 * "Write Short Units of Code" e 2: "Write Simple Units of Code"
+			 */
+			return processTransfer(sibs, data);
 		} catch (OperationException | SibsException | AccountException e) {
+			return "Could not complete transfer!";
+		}
+	}
+
+	private String processTransfer(Sibs sibs, transferOperationData data)
+			throws SibsException, OperationException, AccountException {
+		TransferOperation op = (TransferOperation) sibs
+				.getOperation(sibs.transfer(data.getSourceIban(), data.getTargetIban(), data.getAmount()));
+		while (!(op.getState() instanceof Completed || op.getState() instanceof Error
+				|| op.getState() instanceof Cancelled)) {
+			sibs.process();
+		}
+		if (op.getState() instanceof Completed) {
+			return "Transfer successful!";
+		} else {
 			return "Could not complete transfer!";
 		}
 	}
@@ -88,6 +98,16 @@ public class Controller {
 			return "Something is wrong. Did you set the bill amount right?";
 		}
 		String targetPhoneNumber = friendsPhoneNumber.get(0);
+
+		/*
+		 * metodo receiveMoneyFromFriends criado para respeitar as guidelines 1:
+		 * "Write Short Units of Code" e 2: "Write Simple Units of Code"
+		 */
+		return receiveMoneyFromFriends(numberOfFriends, friendsPhoneNumber, friendsAmount, targetPhoneNumber);
+	}
+
+	private String receiveMoneyFromFriends(int numberOfFriends, ArrayList<String> friendsPhoneNumber,
+			ArrayList<Integer> friendsAmount, String targetPhoneNumber) {
 		for (int i = 1; i < numberOfFriends; i++) {
 			String friend = friendsPhoneNumber.get(i);
 			if (!MBwayAccount.getMBwayAccountByPhoneNumber(friend).isActive()) {
